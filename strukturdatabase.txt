@@ -1,0 +1,19 @@
+CREATE TABLE "public"."chats" ( 
+  "id" SERIAL,
+  "session" TEXT NOT NULL,
+  "msg_id" TEXT NOT NULL,
+  "ts" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now() ,
+  "role" TEXT NOT NULL,
+  "from_jid" TEXT NULL,
+  "bot_jid" TEXT NULL,
+  "push_name" TEXT NULL,
+  "body_text" TEXT NULL,
+  "raw" JSONB NOT NULL DEFAULT '{}'::jsonb ,
+  CONSTRAINT "chats_pkey" PRIMARY KEY ("id"),
+  CONSTRAINT "chats_msg_id_key" UNIQUE ("msg_id")
+);
+CREATE INDEX "idx_chats_session_ts" 
+ON "public"."chats" (
+  "session" ASC,
+  "ts" ASC
+);
