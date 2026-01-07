@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 /**
  * KISS CRM Chat UI (focus: messages only)
@@ -51,18 +51,25 @@ export default function Page() {
     return messages.filter((m) => (m.body_text || '').toLowerCase().includes(q));
   }, [messages, search]);
 
+  const finalUrlDisplay = ENDPOINT_BASE
+    ? sessionId
+      ? `${ENDPOINT_BASE}?session=${encodeURIComponent(sessionId)}&limit=500`
+      : ENDPOINT_BASE
+    : '(unset base)';
+
   const fetchMessages = useCallback(async (session: string) => {
     if (!ENDPOINT_BASE) {
       setMessagesError('NEXT_PUBLIC_CRM_API_BASE belum diset.');
       return;
     }
-    if (!session) return;
     setMessagesLoading(true);
     setMessagesError(null);
     try {
       const url = new URL(ENDPOINT_BASE);
-      url.searchParams.set('session', session);
-      url.searchParams.set('limit', '500');
+      if (session) {
+        url.searchParams.set('session', session);
+        url.searchParams.set('limit', '500');
+      }
       const finalUrl = url.toString();
       // Debug deliverable: log URL yang dipanggil
       console.log('fetch messages ->', finalUrl);
@@ -84,6 +91,10 @@ export default function Page() {
     }
   }, []);
 
+  useEffect(() => {
+    void fetchMessages(sessionId);
+  }, [fetchMessages, sessionId]);
+
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100">
       <div className="mx-auto max-w-7xl px-4 py-6">
@@ -103,19 +114,19 @@ export default function Page() {
 
         {/* Main (messages-only) */}
         <main className="rounded-2xl border border-neutral-800 bg-neutral-900/40">
-          <div className="border-b border-neutral-800 p-4">
+          <div className="border-b border-neutral-800 p-4 space-y-2">
             <div className="flex flex-wrap items-center gap-3">
               <input
                 value={sessionId}
                 onChange={(e) => setSessionId(e.target.value)}
-                placeholder="Session ID"
+                placeholder="Session ID (opsional)"
                 className="w-full max-w-sm rounded-xl border border-neutral-800 bg-neutral-950 px-3 py-2 text-sm font-mono outline-none focus:border-neutral-600"
               />
               <button
                 onClick={() => fetchMessages(sessionId)}
                 className="rounded-xl bg-neutral-800 px-3 py-2 text-sm hover:bg-neutral-700"
               >
-                Load messages
+                Reload (GET)
               </button>
               <input
                 value={search}
@@ -124,8 +135,14 @@ export default function Page() {
                 className="w-full max-w-xs rounded-xl border border-neutral-800 bg-neutral-950 px-3 py-2 text-sm outline-none focus:border-neutral-600"
               />
             </div>
-            <div className="mt-2 text-xs text-neutral-500">
-              Endpoint: {ENDPOINT_BASE || '(unset base)'}
+            <div className="text-xs text-neutral-500">
+              Endpoint: {finalUrlDisplay}
+            </div>
+            <div className="text-xs text-neutral-500">
+              Refresh = GET {ENDPOINT_BASE || '(unset base)'}
+            </div>
+            <div className="text-xs text-neutral-500">
+              Session optional: kalau kosong, fetch langsung ke URL env (mirip curl -i).
             </div>
           </div>
 
