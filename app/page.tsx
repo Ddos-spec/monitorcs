@@ -17,13 +17,7 @@ type ChatMessage = {
   body_text?: string;
 };
 
-const API_BASE = (process.env.NEXT_PUBLIC_CRM_API_BASE || '').replace(/\/$/, '');
-const CRM_PATH = '/crm-messages';
-const ENDPOINT_BASE = API_BASE
-  ? API_BASE.endsWith(CRM_PATH)
-    ? API_BASE
-    : `${API_BASE}${CRM_PATH}`
-  : '';
+const ENDPOINT_BASE = (process.env.NEXT_PUBLIC_CRM_API_BASE || '').replace(/\/$/, '');
 
 function fmtTime(iso?: string) {
   if (!iso) return '';
@@ -101,9 +95,9 @@ export default function Page() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <div className="hidden text-xs text-neutral-500 md:block">
-              API: {API_BASE || '(unset)'}
-            </div>
+              <div className="hidden text-xs text-neutral-500 md:block">
+                API: {ENDPOINT_BASE || '(unset)'}
+              </div>
           </div>
         </header>
 
