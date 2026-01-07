@@ -189,6 +189,13 @@ export default function Page() {
       if (!res.ok) throw new Error(`messages HTTP ${res.status}`);
       const data = (await res.json()) as ChatMessage[];
       const safe = Array.isArray(data) ? data : [];
+      console.log('Total messages:', safe.length);
+      console.log('Sample data:', safe.slice(0, 3));
+
+      // Debug: unique sessions
+      const uniqueSessions = new Set(safe.map(m => m.session));
+      console.log('Unique sessions:', uniqueSessions.size, Array.from(uniqueSessions));
+
       setAllMessages(safe);
       // Auto select first session
       if (safe.length > 0 && !selectedSession) {
