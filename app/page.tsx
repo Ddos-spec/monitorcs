@@ -18,6 +18,12 @@ type ChatMessage = {
 };
 
 const API_BASE = (process.env.NEXT_PUBLIC_CRM_API_BASE || '').replace(/\/$/, '');
+const CRM_PATH = '/crm-messages';
+const ENDPOINT_BASE = API_BASE
+  ? API_BASE.endsWith(CRM_PATH)
+    ? API_BASE
+    : `${API_BASE}${CRM_PATH}`
+  : '';
 
 function fmtTime(iso?: string) {
   if (!iso) return '';
@@ -52,7 +58,7 @@ export default function Page() {
   }, [messages, search]);
 
   const fetchMessages = useCallback(async (session: string) => {
-    if (!API_BASE) {
+    if (!ENDPOINT_BASE) {
       setMessagesError('NEXT_PUBLIC_CRM_API_BASE belum diset.');
       return;
     }
@@ -60,7 +66,7 @@ export default function Page() {
     setMessagesLoading(true);
     setMessagesError(null);
     try {
-      const url = new URL(`${API_BASE}/crm-messages`);
+      const url = new URL(ENDPOINT_BASE);
       url.searchParams.set('session', session);
       url.searchParams.set('limit', '500');
       const finalUrl = url.toString();
@@ -125,7 +131,7 @@ export default function Page() {
               />
             </div>
             <div className="mt-2 text-xs text-neutral-500">
-              Endpoint: {API_BASE ? `${API_BASE}/crm-messages` : '(unset base)'}
+              Endpoint: {ENDPOINT_BASE || '(unset base)'}
             </div>
           </div>
 
