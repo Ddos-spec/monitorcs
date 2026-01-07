@@ -1,13 +1,13 @@
-## Workflow n8n (GET /webhook/crm-messages)
+## Workflow n8n (GET webhook untuk messages)
 
-Gunakan workflow berikut (versi diringkas) supaya frontend bisa fetch messages:
+Contoh workflow di bawah bisa dipakai, tetapi path webhook bisa kamu isi bebas sesuai yang kamu mau (contoh: `crm-messages` atau `87de1cef-12b9-46d7-a0cb-nampilinchat`). Sesuaikan juga env `NEXT_PUBLIC_CRM_API_BASE` di Vercel ke URL webhook penuh yang kamu pakai. Frontend tidak menambah path apa pun.
 
 ```json
 {
   "nodes": [
     {
       "parameters": {
-        "path": "crm-messages",
+        "path": "crm-messages",        // ganti ke path yang kamu mau
         "httpMethod": "GET",
         "responseMode": "responseNode",
         "options": {
